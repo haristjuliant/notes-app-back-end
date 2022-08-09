@@ -1,0 +1,162 @@
+//     ======  KRITERIA 1, WEBSERVER MENYIMPAN CATATAN ======
+
+struktur objek catatan
+{
+    id: string,
+    tittle: string,
+    createdAt: string,
+    updatedAt: string,
+    tags: arrayof string,
+    body: string
+}
+
+for example:
+{
+    id: 'notes-V1StGXR8_Z5jdHi6B-myT',
+    title: 'Sejarah JavaScript',
+    createdAt: '2020-12-23T23:00:09.686Z',
+    updatedAt: '2020-12-23T23:00:09.686Z',
+    tags: ['NodeJS', 'JavaScript'],
+     body: 'JavaScript pertama kali dikembangkan oleh Brendan Eich dari Netscape di bawah nama Mocha, yang nantinya namanya diganti menjadi LiveScript, dan akhirnya menjadi JavaScript. Navigator sebelumnya telah mendukung Java untuk lebih bisa dimanfaatkan para pemrogram yang non-Java.',
+},
+
+membuat catatan :
+route path '/notes' method POST
+
+dalam menyimpan atau menambah notes, client mengirimkan permintaan ke path dan method dengan data JSON berikut pada request body :
+{
+    "title": "Judul Catatan",
+    "tags": ["Tag 1", "Tag 2"],
+    "body": "Konten catatan"
+}
+id, createdAt & updatedAt diolah disisi server
+server memastikan id selalu unik
+
+permintaan klien berhasil, status code 201 (created)
+dan mengembalikan data bentuk JSON format berikut
+{
+    "status": "success",
+    "message": "Catatan berhasil ditambahkan",
+    "data": {
+        "noteId": "V09YExygSUYogwWJ"
+    }
+}
+noteId adalah properti id yang dibuat unik
+
+bila gagal Status Code 500 & mengembalikan data JSON
+{
+    "status": "error",
+    "message": "Catatan gagal untuk ditambahkan"
+}
+
+
+//   ======  KRITERIA 2, WEBSERVER MENAMPILKAN CATATAN ======
+
+dapat menampilkan catatan
+webserver mengirimkan seluruh atau sevara spesifik data notes
+
+client permintaan path '/notes' method 'GET'
+    server mengembalikan Status Code 200 (OK).
+    data notes dalam array format JSON. contoh
+{
+    "status": "success",
+    "data": {
+    "notes": [
+        {
+        "id":"notes-V1StGXR8_Z5jdHi6B-myT",
+        "title":"Catatan 1",
+        "createdAt":"2020-12-23T23:00:09.686Z",
+        "updatedAt":"2020-12-23T23:00:09.686Z",
+        "tags":[
+            "Tag 1",
+            "Tag 2"
+        ],
+        "body":"Isi dari catatan 1"
+        },
+
+        {
+        "id":"notes-V1StGXR8_98apmLk3mm1",
+        "title":"Catatan 2",
+        "createdAt":"2020-12-23T23:00:09.686Z",
+        "updatedAt":"2020-12-23T23:00:09.686Z",
+        "tags":[
+            "Tag 1",
+            "Tag 2"
+        ],
+        "body":"Isi dari catatan 2"   
+    ]   
+}
+
+jika tidak ada catatan satu pun pada server maka mengembalikan notes dengan nilai array kosong
+{
+    "status": "success",
+    "data": {
+    "notes": []
+    }
+}
+
+client juga dapat request catatan spesifik dengan 'id' melalu path /notes/{id} method 'GET'
+server mengembalikan Status Code 200 (OK). dan satu objek catatan seperti dibawah
+{
+    "status": "success",
+    "data": {
+    "note": {
+        "id":"notes-V1StGXR8_Z5jdHi6B-myT",
+        "title":"Catatan 1",
+        "createdAt":"2020-12-23T23:00:09.686Z",
+        "updatedAt":"2020-12-23T23:00:09.686Z",
+        "tags":[
+        "Tag 1",
+        "Tag 2"
+        ],
+        "body":"Isi dari catatan 1"
+        }
+    }
+}
+
+jika client melampirkan 'id' yang tidak ada, server merespon Status Code 404 dan JSON
+{
+    "status": "fail",
+    "message": "Catatan tidak ditemukan"
+}
+
+//     ======  KRITERIA 3, WEBSERVER MENGUBAH CATATAN ======
+
+ubah yg dimaksud bisa judul, isi atau tag catatan
+request path '/notes/{id}' method 'PUT' dan JSON body request
+{
+    "title":"Judul Catatan Revisi",
+    "tags":[
+        "Tag 1",
+        "Tag 2"
+    ],
+    "body":"Konten catatan"
+}
+
+perubahan berhasil status Code 200 (ok) dan JSON
+{
+    "status": "success",
+    "message": "Catatan berhasil diperbaharui"
+}
+
+ubah catatan harus sesuai 'id',
+jika tidak ditemukan maka respon Status Code 404 (not found) dan JSON
+{
+    "status": "fail",
+    "message": "Gagal memperbarui catatan. Id catatan tidak ditemukan"
+}
+
+//     ======  KRITERIA 4, WEBSERVER MENGHAPUS CATATAN ======
+
+client permintaan path '/notes/{id}' method 'DELETE'
+jika berhasil Status Code 200 (ok) dan JSON
+{
+    "status": "success",
+    "message": "Catatan berhasil dihapus"
+}
+
+jika 'id' tidak ditemukan Status Code 404 dan JSON
+{
+    "status": "fail",
+    "message": "Catatan gagal dihapus. Id catatan tidak ditemukan"
+}
